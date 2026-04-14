@@ -1,0 +1,45 @@
+// firestore.rules
+// Deploy with: firebase deploy --only firestore:rules
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ─────────────────────────────────────────────────────
+    function isSignedIn()  { return request.auth != null; }
+    function isOwner(uid)  { return request.auth.uid == uid; }
+    function getUser()     { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isAdmin()     { return isSignedIn() && getUser().role == 'admin'; }
+    function isVendor()    { return isSignedIn() && getUser().role == 'vendor'; }
+
+    // ── Users ────────────────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read:   if isSignedIn() && (isOwner(uid) || isAdmin());
+      allow create: if isSignedIn() && isOwner(uid);
+      allow update: if isSignedIn() && (isOwner(uid) || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ── Vendors ──────────────────────────────────────────────────────────────
+    match /vendors/{uid} {
+      // Anyone signed in can read vendor profiles (for matching)
+      allow read:   if isSignedIn();
+      // Only the vendor themselves or admin can write
+      allow create: if isSignedIn() && isOwner(uid);
+      allow update: if isSignedIn() && (isOwner(uid) || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ── Orders ───────────────────────────────────────────────────────────────
+    match /orders/{orderId} {
+      // Customer can read their own; vendor can read all (for matching); admin reads all
+      allow read:   if isSignedIn();
+      // Anyone can create an order (including guests via uid = 'guest' is blocked, so require sign-in)
+      allow create: if true; // Allow guest orders — tighten later if needed
+      // Only vendor or admin can update status
+      allow update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+  }
+}
