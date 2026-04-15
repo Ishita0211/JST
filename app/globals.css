@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f0f7ff;
+  --card: #ffffff;
+}
+
+body {
+  background-color: var(--bg);
+  font-family: "Outfit", sans-serif;
+}
+
+/* Smooth subtle water ripple bg */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, #bfe3fe33 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, #93d1fd22 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
