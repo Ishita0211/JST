@@ -1,17 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from '../supabase';
-type Order = {
-  id: number;
-  name: string;
-  phone: string;
-  address: string;
-  quantity: number;
-  floor: number;
-  status: "pending" | "accepted" | "delivered";
-  created_at: string;
-};
+import { supabase, Order } from '../supabase';
+
 
 const STATUS_COLORS: Record<Order["status"], string> = {
   pending: "bg-amber-100 text-amber-700 border-amber-200",
