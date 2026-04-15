@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase, Order } from "@/lib/supabase";
+import { supabase } from '../supabase';
 
 const STATUS_COLORS: Record<Order["status"], string> = {
   pending: "bg-amber-100 text-amber-700 border-amber-200",
